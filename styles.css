@@ -1,0 +1,120 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+.addNote {
+  margin-bottom: 10px;
+  width: 100%;
+  height: 35px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.addNoteInput {
+  width: 75%;
+}
+
+.addNoteInput:focus {
+  background-color: var(--background-modifier-hover) !important;
+  color: var(--text-on-accent);
+  border-radius: 8px;
+  box-shadow: 0 0 5px var(--interactive-accent), inset 0 0 0 2px var(--interactive-accent-hover) !important;
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.addNoteButton {
+  width: 15%;
+  border-radius: 8px;
+}
+
+.ant-tree {
+  padding: 4px 8px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 8px;
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+}
+
+.ant-tree .ant-tree-treenode {
+  display: flex;
+  align-items: center;
+}
+
+.ant-tree-node-selected {
+  background-color: var(--background-modifier-hover) !important;
+}
+
+.ant-tree .ant-tree-node-content-wrapper {
+  padding: 0;
+  padding-inline: 0 !important;
+}
+
+.ant-tree-node-content-wrapper:hover {
+  color: var(--interactive-accent);
+  box-shadow: 0 0 5px var(--interactive-accent-hover);
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.editable-element,
+.editable-input.ant-input {
+  width: 100%;
+  height: 100%;
+  padding: 8px 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 14px;
+  line-height: normal;
+  background-color: var(--background-primary);
+  color: var(--text-normal);
+  border: none;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.editable-input.ant-input:focus {
+  box-shadow: 0 0 5px var(--interactive-accent-hover), inset 0 0 0 1px var(--interactive-accent-hover);
+}
+
+.ant-tree .ant-tree-treenode-draggable .ant-tree-draggable-icon {
+  color: var(--interactive-accent);
+  opacity: 0.8;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.ant-tree .ant-tree-treenode-draggable:hover .ant-tree-draggable-icon {
+  color: var(--interactive-accent-hover);
+  opacity: 1;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.ant-tree-switcher {
+  width: 16px !important;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  background-color: transparent !important;
+}
+
+.ant-tree-switcher:hover {
+  background-color: transparent !important;
+}
+
+.ant-tree-switcher-icon {
+  background-color: transparent !important;
+}
+
+.ant-tree-switcher:hover .ant-tree-switcher-icon,
+.ant-tree-switcher:focus .ant-tree-switcher-icon {
+  background-color: transparent !important;
+}
+
+.ant-tree-switcher::before,
+.ant-tree-switcher::after {
+  content: none !important;
+  background-color: transparent !important;
+  border: none !important;
+}
