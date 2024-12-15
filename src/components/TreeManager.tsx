@@ -2,6 +2,11 @@ import React, {useState, useEffect} from 'react'
 import {Tree, Input, ConfigProvider} from 'antd'
 import type {TreeDataNode, TreeProps} from 'antd'
 
+import type {DatePickerProps} from 'antd'
+import {DatePicker} from 'antd'
+import en from 'antd/es/date-picker/locale/en_US'
+import dayjs from 'dayjs'
+
 import {getCSSVariable} from '../utils/themeUtils'
 import '../../styles.css'
 
@@ -9,7 +14,19 @@ interface TreeItem {
   id: number;
   name: string;
   type: 'folder' | 'file';
+  nextReviewDate: Date;
   children?: TreeItem[];
+}
+
+const buddhistLocale: typeof en = {
+  ...en,
+  lang: {
+    ...en.lang,
+    fieldDateFormat: 'YYYY-MM-DD',
+    fieldDateTimeFormat: 'YYYY-MM-DD HH:mm:ss',
+    yearFormat: 'YYYY',
+    cellYearFormat: 'YYYY',
+  },
 }
 
 const TreeManager: React.FC<{
@@ -51,6 +68,17 @@ const EditableTreeView: React.FC<{
     const recursivelyUpdate = (nodes: TreeDataNode[]): TreeDataNode[] =>
       nodes.map((node) => {
         if (node.key === key) return {...node, title: newValue}
+        if (node.children) return {...node, children: recursivelyUpdate(node.children)}
+        return node
+      })
+
+    return recursivelyUpdate(treeData)
+  }
+
+  const updateTreeNodeNextReviewDate = (key: string, node: string, formattedDate: string) => {
+    const recursivelyUpdate = (nodes: TreeDataNode[]): TreeDataNode[] =>
+      nodes.map((node) => {
+        if (node.key === key) return {...node, nextReviewDate: formattedDate}
         if (node.children) return {...node, children: recursivelyUpdate(node.children)}
         return node
       })
@@ -127,6 +155,13 @@ const EditableTreeView: React.FC<{
   const renderTreeNode = (node: TreeDataNode) => {
     const isEditing = editingNode?.key === node.key
 
+    const themeDatePicker = {
+      colorTextPlaceholder: getCSSVariable('--text-normal', '#fff'),
+      colorText: getCSSVariable('--text-normal', '#fff'),
+      colorIcon: getCSSVariable('--text-normal', '#fff'),
+      colorIconHover: getCSSVariable('--interactive-accent'),
+    }
+
     const openObsidianLink = (link: string) => {
       const app = (window as any).app
       if (app && app.workspace) {
@@ -134,15 +169,55 @@ const EditableTreeView: React.FC<{
       }
     }
 
+
+    const updateNextReviewDate = (node, formattedDate) => {
+      console.log(node)
+      console.log(formattedDate)
+      const updatedTreeData = updateTreeNodeNextReviewDate(node.key, { ...node.value}, formattedDate)
+      setTreeData(updatedTreeData)
+      onTreeUpdate(updatedTreeData as TreeItem[])
+    }
+
+    const onChange: DatePickerProps['onChange'] = (date, dateString) => {
+      console.log(date, dateString)
+    }
+
+    const defaultValue = dayjs(node.nextReviewDate || '2025-01-01T00:00:00')
+
     return isEditing ? (
-      <Input
-        value={editingNode.value}
-        onChange={(e) => setEditingNode({...editingNode, value: e.target.value})}
-        onBlur={finishEditing}
-        onPressEnter={finishEditing}
-        autoFocus
-        className="editable-input"
-      />
+      <span className="content-editable">
+        <Input
+          value={editingNode.value}
+          onChange={(e) => setEditingNode({...editingNode, value: e.target.value})}
+          onBlur={finishEditing}
+          onPressEnter={finishEditing}
+          autoFocus
+          className="editable-input"
+        />
+        <span className="time-link-group">
+          <ConfigProvider
+            theme={{
+              token: themeDatePicker,
+            }}
+          >
+            <DatePicker
+              defaultValue={defaultValue}
+              showTime
+              locale={buddhistLocale}
+              onChange={(value) => {
+                const formattedTime = value?.format('YYYY-MM-DDTHH:mm:ss') || '';
+                updateNextReviewDate(node, formattedTime);
+              }}
+            />
+          </ConfigProvider>
+          <button
+            onClick={() => openObsidianLink(node.link || 'Поля данных и формат')}
+            className="obsidian-link"
+          >
+            Open
+          </button>
+        </span>
+      </span>
     ) : (
       <span className="content-editable">
         <span
@@ -151,16 +226,29 @@ const EditableTreeView: React.FC<{
         >
           {node.title}
         </span>
-        <span className="node-time">
-          {/*{node.time || 'DD-MM-YYYYTHH:mm'}*/}
-          2024-12-13 21:56
+        <span className="time-link-group">
+          <ConfigProvider
+            theme={{
+              token: themeDatePicker,
+            }}
+          >
+            <DatePicker
+              defaultValue={defaultValue}
+              showTime
+              locale={buddhistLocale}
+              onChange={value => {
+                const formattedTime = value?.format('YYYY-MM-DDTHH:mm:ss') || '';
+                updateNextReviewDate(node, formattedTime);
+              }}
+            />
+          </ConfigProvider>
+          <button
+            onClick={() => openObsidianLink(node.link || 'Поля данных и формат')}
+            className="obsidian-link"
+          >
+            Open
+          </button>
         </span>
-        <button
-          onClick={() => openObsidianLink(node.link || 'Поля данных и формат')}
-          className="node-link-button"
-        >
-          Open
-        </button>
       </span>
     )
   }

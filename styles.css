@@ -13,7 +13,7 @@
 }
 
 .addNoteInput {
-  width: 75%;
+  width: 82%;
 }
 
 .addNoteInput:focus {
@@ -37,13 +37,23 @@
   color: var(--text-normal);
 }
 
+
 .ant-tree .ant-tree-treenode {
+  background-color: var(--background-primary);
   display: flex;
   align-items: center;
 }
 
-.ant-tree-node-selected {
-  background-color: var(--background-modifier-hover) !important;
+.ant-tree-treenode-selected, .ant-tree-title {
+  background-color: var(--background-primary) !important;
+}
+
+.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+  background-color: var(--background-primary) !important;
+}
+
+.ant-tree-treenode:hover, .ant-tree-treenode:focus {
+  background-color: var(--background-primary) !important;
 }
 
 .ant-tree .ant-tree-node-content-wrapper {
@@ -57,9 +67,15 @@
   transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
 }
 
+.content-editable {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .editable-element,
 .editable-input.ant-input {
-  width: 100%;
+  width: calc(100% - 232px);
   height: 100%;
   padding: 8px 8px;
   border-radius: 8px;
@@ -117,4 +133,97 @@
   content: none !important;
   background-color: transparent !important;
   border: none !important;
+}
+
+.time-link-group {
+  width: 230px !important;
+  margin-left: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: transparent !important;
+}
+
+.date-picker {
+  width: 170px !important;
+  padding: 4px 0;
+  background-color: transparent !important;
+}
+
+.date-picker::placeholder {
+  color: aliceblue !important;
+}
+
+.ant-picker-input::placeholder {
+  color: aliceblue !important;
+}
+
+.obsidian-link {
+  width: 50px;
+  margin: 0 5px 0 5px;
+}
+
+.ant-picker-header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.ant-picker-header-super-prev-btn, .ant-picker-header-prev-btn, .ant-picker-month-btn, .ant-picker-year-btn, .ant-picker-header-next-btn, .ant-picker-header-super-next-btn, .ant-picker-decade-btn {
+  background-color: transparent !important;
+  color: #1e1e1e !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.ant-picker-header-super-prev-btn:hover, .ant-picker-header-prev-btn:hover, .ant-picker-month-btn:hover, .ant-picker-year-btn:hover, .ant-picker-header-next-btn:hover, .ant-picker-header-super-next-btn:hover {
+  background-color: var(--background-modifier-hover);
+  opacity: 1 !important;
+  color: var(--color-base-00) !important;
+}
+
+th, td, .ant-picker-header-view, .ant-picker-time-panel-cell-inner {
+  color: var(--color-base-00) !important;
+}
+
+
+
+td:hover, .ant-picker-time-panel-cell-inner:hover {
+  color: var(--color-accent) !important;
+  opacity: 1 !important;
+}
+
+.ant-picker-now-btn {
+  opacity: 0.8 !important;
+  text-decoration: none !important;
+  background: none !important;
+  border: none !important;
+  outline: none !important;
+  color: var(--color-accent) !important;
+}
+
+.ant-picker-now-btn:hover {
+  color: var(--color-accent) !important;
+  opacity: 1 !important;
+}
+
+.ant-picker .ant-picker-suffix {
+  color: var(--text-normal);
+  transition: color 0.3s ease;
+}
+
+.ant-picker:hover .ant-picker-suffix {
+  color: var(--interactive-accent-hover);
+}
+
+/* Обычный стиль placeholder */
+.ant-picker input::placeholder {
+  color: var(--text-muted); /* Цвет placeholder */
+  transition: color 0.3s ease;
+}
+
+/* Изменение цвета placeholder при наведении на DatePicker */
+.ant-picker:hover input::placeholder {
+  color: var(--interactive-accent-hover); /* Цвет placeholder при наведении */
 }
