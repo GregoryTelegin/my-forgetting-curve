@@ -15,7 +15,6 @@ const ParentComponent: React.FC<{ initialNotes: Note[]; onSave: (notes: Note[]) 
 }) => {
   const [notes, setNotes] = useState(initialNotes);
 
-  // Функция для добавления новой заметки
   const handleAddNote = (newNote: Note) => {
     const updatedNotes = [...notes, newNote];
     setNotes(updatedNotes);
@@ -29,9 +28,9 @@ const ParentComponent: React.FC<{ initialNotes: Note[]; onSave: (notes: Note[]) 
         onSaveNotes={handleAddNote}
       />
       <TreeManager
-        data={notes} // Передаём обновлённые заметки
+        data={notes}
         onDataUpdate={(updatedNotes) => {
-          setNotes(updatedNotes); // Сохраняем изменения из ReactView
+          setNotes(updatedNotes);
           onSave(updatedNotes);
         }}
       />
