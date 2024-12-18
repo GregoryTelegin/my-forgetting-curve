@@ -9,14 +9,8 @@ import dayjs from 'dayjs'
 
 import {getCSSVariable} from '../utils/themeUtils'
 import '../../styles.css'
+import { Note } from '~/types'
 
-interface TreeItem {
-  id: number;
-  name: string;
-  type: 'folder' | 'file';
-  nextReviewDate: Date;
-  children?: TreeItem[];
-}
 
 const buddhistLocale: typeof en = {
   ...en,
@@ -31,7 +25,7 @@ const buddhistLocale: typeof en = {
 
 const TreeManager: React.FC<{
   data: TreeDataNode[];
-  onDataUpdate: (updatedData: TreeItem[]) => void;
+  onDataUpdate: (updatedData: Note[]) => void;
 }> = ({data, onDataUpdate}) => {
   const [treeData, setTreeData] = useState<TreeDataNode[]>(data)
 
@@ -55,7 +49,7 @@ const TreeManager: React.FC<{
 
 const EditableTreeView: React.FC<{
   treeData: TreeDataNode[];
-  onTreeUpdate: (updatedData: TreeItem[]) => void;
+  onTreeUpdate: (updatedData: Note[]) => void;
 }> = ({treeData: initialTreeData, onTreeUpdate}) => {
   const [treeData, setTreeData] = useState<TreeDataNode[]>(initialTreeData)
   const [editingNode, setEditingNode] = useState<{ key: string; value: string } | null>(null)
@@ -75,7 +69,7 @@ const EditableTreeView: React.FC<{
     return recursivelyUpdate(treeData)
   }
 
-  const updateTreeNodeNextReviewDate = (key: string, node: string, formattedDate: string) => {
+  const updateTreeNodeNextReviewDate = (key: string, formattedDate: string) => {
     const recursivelyUpdate = (nodes: TreeDataNode[]): TreeDataNode[] =>
       nodes.map((node) => {
         if (node.key === key) return {...node, nextReviewDate: formattedDate}
@@ -96,7 +90,7 @@ const EditableTreeView: React.FC<{
     const updatedTreeData = updateTreeNode(editingNode.key, editingNode.value)
     setTreeData(updatedTreeData)
     setEditingNode(null)
-    onTreeUpdate(updatedTreeData as TreeItem[])
+    onTreeUpdate(updatedTreeData as Note[])
   }
 
   const handleNodeDrop: TreeProps['onDrop'] = (info) => {
@@ -149,11 +143,11 @@ const EditableTreeView: React.FC<{
     }
 
     setTreeData(data)
-    onTreeUpdate(data as TreeItem[])
+    onTreeUpdate(data as Note[])
   }
 
-  const renderTreeNode = (node: TreeDataNode) => {
-    const isEditing = editingNode?.key === node.key
+  const renderTreeNode = (treeDataNode: TreeDataNode) => {
+    const node = treeDataNode as Note;
 
     const themeDatePicker = {
       colorTextPlaceholder: getCSSVariable('--text-normal', '#fff'),
@@ -170,55 +164,20 @@ const EditableTreeView: React.FC<{
     }
 
 
-    const updateNextReviewDate = (node, formattedDate) => {
-      console.log(node)
-      console.log(formattedDate)
-      const updatedTreeData = updateTreeNodeNextReviewDate(node.key, { ...node.value}, formattedDate)
+    const updateNextReviewDate = (node: Note, formattedDate: string) => {
+      const updatedTreeData = updateTreeNodeNextReviewDate(node.key, formattedDate)
       setTreeData(updatedTreeData)
-      onTreeUpdate(updatedTreeData as TreeItem[])
+      onTreeUpdate(updatedTreeData as Note[])
     }
 
-    const onChange: DatePickerProps['onChange'] = (date, dateString) => {
-      console.log(date, dateString)
+    const defaultValue = dayjs('2025-01-01T00:00:00')
+
+    const onClickOpenHandler = () => {
+      // TODO: потом релизовать ссылку на конспект
+      return openObsidianLink('Поля данных и формат');
     }
 
-    const defaultValue = dayjs(node.nextReviewDate || '2025-01-01T00:00:00')
-
-    return isEditing ? (
-      <span className="content-editable">
-        <Input
-          value={editingNode.value}
-          onChange={(e) => setEditingNode({...editingNode, value: e.target.value})}
-          onBlur={finishEditing}
-          onPressEnter={finishEditing}
-          autoFocus
-          className="editable-input"
-        />
-        <span className="time-link-group">
-          <ConfigProvider
-            theme={{
-              token: themeDatePicker,
-            }}
-          >
-            <DatePicker
-              defaultValue={defaultValue}
-              showTime
-              locale={buddhistLocale}
-              onChange={(value) => {
-                const formattedTime = value?.format('YYYY-MM-DDTHH:mm:ss') || '';
-                updateNextReviewDate(node, formattedTime);
-              }}
-            />
-          </ConfigProvider>
-          <button
-            onClick={() => openObsidianLink(node.link || 'Поля данных и формат')}
-            className="obsidian-link"
-          >
-            Open
-          </button>
-        </span>
-      </span>
-    ) : (
+    return (
       <span className="content-editable">
         <span
           className="editable-element"
@@ -243,7 +202,7 @@ const EditableTreeView: React.FC<{
             />
           </ConfigProvider>
           <button
-            onClick={() => openObsidianLink(node.link || 'Поля данных и формат')}
+            onClick={onClickOpenHandler}
             className="obsidian-link"
           >
             Open
