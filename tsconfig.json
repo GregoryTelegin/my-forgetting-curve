@@ -11,7 +11,9 @@
     "baseUrl": "./",
     "paths": {
       "~/*": ["src/*"] // Настройка алиаса "~" на папку "src"
-    }
+    },
+    "outDir": "./dist", // Папка для компилированных файлов
+    "rootDir": "./src",  
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
