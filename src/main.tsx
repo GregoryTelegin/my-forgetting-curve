@@ -2,14 +2,9 @@ import {App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Sett
 import {ItemView, WorkspaceLeaf} from 'obsidian'
 import {Root, createRoot} from 'react-dom/client'
 import ParentComponent from './components/App'
+import type { Note } from '~/types';
 
 import {StrictMode} from 'react'
-
-interface Note {
-  title: string;
-  key: string;
-  children: Note[];
-}
 
 // Remember to rename these classes and interfaces!
 const VIEW_TYPE_FORGETTING_CURVES = 'forgetting-curves-view'
@@ -86,11 +81,16 @@ export default class MyForgettingCurvesPlugin extends Plugin {
     }
 
     // Создаём новый вид, если он не открыт
-    const leaf = this.app.workspace.getRightLeaf(false)
+    const leaf = this.app.workspace.getRightLeaf(false);
+
+    if (leaf === null) {
+      return;
+    }
+
     await leaf.setViewState({
       type: VIEW_TYPE_FORGETTING_CURVES,
     })
-    this.app.workspace.revealLeaf(leaf)
+    this.app.workspace.revealLeaf(leaf);
 
     this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
       console.log('click', evt)
@@ -144,16 +144,19 @@ class SampleSettingTab extends PluginSettingTab {
     const settings = await this.plugin.loadData();
     const notes = settings.notes || [];
 
+    const onSaveHandler = async (updatedNotes: Note[]) => {
+      console.warn('UPDATED NOTES', updatedNotes)
+      const data = await this.plugin.loadData();
+      await this.plugin.saveData({ ...data, notes: updatedNotes });
+    }
+
+
     // Рендерим React-компонент
     this.root.render(
       <StrictMode>
         <ParentComponent
           initialNotes={notes}
-          onSave={async (updatedNotes) => {
-            console.warn('UPDATED NOTES', updatedNotes)
-            const data = await this.plugin.loadData();
-            await this.plugin.saveData({ ...data, notes: updatedNotes });
-          }}
+          onSave={onSaveHandler}
         />
       </StrictMode>
     );

@@ -1,13 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import TreeManager from './TreeManager';
 import AddNoteComponent from './addNotes'
-
-interface Note {
-  id: number;
-  name: string;
-  type: 'folder' | 'file';
-  children?: Note[];
-}
+import type { Note } from '~/types';
 
 const ParentComponent: React.FC<{ initialNotes: Note[]; onSave: (notes: Note[]) => void }> = ({
   initialNotes,
@@ -21,6 +15,11 @@ const ParentComponent: React.FC<{ initialNotes: Note[]; onSave: (notes: Note[]) 
     onSave(updatedNotes);
   };
 
+  const onUpdateHandler = (updatedNotes: Note[]) => {
+    setNotes(updatedNotes);
+    onSave(updatedNotes);
+  }
+
   return (
     <div>
       <AddNoteComponent
@@ -29,10 +28,7 @@ const ParentComponent: React.FC<{ initialNotes: Note[]; onSave: (notes: Note[]) 
       />
       <TreeManager
         data={notes}
-        onDataUpdate={(updatedNotes) => {
-          setNotes(updatedNotes);
-          onSave(updatedNotes);
-        }}
+        onDataUpdate={onUpdateHandler}
       />
     </div>
   );

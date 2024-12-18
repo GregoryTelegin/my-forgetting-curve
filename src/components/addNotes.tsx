@@ -1,11 +1,6 @@
 import React, {useState} from 'react'
 import '../../styles.css'
-
-interface Note {
-  title: string;
-  key: string;
-  children: Note[];
-}
+import { Note } from '~/types';
 
 const AddNoteComponent: React.FC<{
   initialNotes: Note[];
