@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "node esbuild.config.mjs",
 		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
-		"version": "node version-bump.mjs && git add manifest.json versions.json"
+		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"prepare": "simple-git-hooks"
 	},
 	"keywords": [],
 	"author": "Gregory T",
@@ -22,9 +23,13 @@
 		"obsidian": "latest",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
+		"simple-git-hooks": "^2.11.1",
 		"typescript": "^4.9.5"
 	},
 	"dependencies": {
 		"antd": "^5.22.3"
+	},
+	"simple-git-hooks": {
+		"pre-commit": "npx tsc --noEmit"
 	}
 }

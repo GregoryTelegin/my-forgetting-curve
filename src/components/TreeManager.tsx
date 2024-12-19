@@ -80,7 +80,7 @@ const EditableTreeView: React.FC<{
     return recursivelyUpdate(treeData)
   }
 
-  const beginEditing = (key: number, value: number) => {
+  const beginEditing = (key: string, value: string) => {
     setEditingNode({key, value})
   }
 
