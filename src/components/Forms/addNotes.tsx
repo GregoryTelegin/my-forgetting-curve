@@ -1,11 +1,13 @@
 import React, {useState} from 'react'
+import '../../../styles.css'
+import dayjs from 'dayjs'
+import {Note} from '../types/note'
 import '../../styles.css'
-import { Note } from '~/types';
 
 const AddNoteComponent: React.FC<{
-  initialNotes: Note[];
+  _initialNotes: Note[];
   onSaveNotes: (newNote: Note) => void;
-}> = ({initialNotes, onSaveNotes}) => {
+}> = ({_initialNotes, onSaveNotes}) => {
   const [inputValue, setInputValue] = useState('')
 
   const handleAddNote = () => {
@@ -14,8 +16,10 @@ const AddNoteComponent: React.FC<{
         title: inputValue.trim(),
         key: Date.now().toString(),
         children: [],
+        status: 'ok',
+        nextReviewDate: dayjs()
       }
-      onSaveNotes(newNote) // Передаём только новый элемент
+      onSaveNotes(newNote)
       setInputValue('')
     }
   }
