@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react'
 import TreeManager from './TreeNotes/TreeManager';
 import AddNoteComponent from './Forms/addNotes'
 import {Note} from './types/note'
@@ -15,19 +15,15 @@ const SettingsApp: React.FC<{ initialNotes: Note[]; onSave: (notes: Note[]) => v
     onSave(updatedNotes);
   };
 
+  const handleDataUpdate = (updatedNotes: Note[]) => {
+    setNotes(updatedNotes);
+    onSave(updatedNotes);
+  };
+
   return (
     <div>
-      <AddNoteComponent
-        _initialNotes={notes}
-        onSaveNotes={handleAddNote}
-      />
-      <TreeManager
-        data={notes}
-        onDataUpdate={(updatedNotes) => {
-          setNotes(updatedNotes);
-          onSave(updatedNotes);
-        }}
-      />
+      <AddNoteComponent _initialNotes={notes} onSaveNotes={handleAddNote} />
+      <TreeManager data={notes} onDataUpdate={handleDataUpdate} />
     </div>
   );
 };
