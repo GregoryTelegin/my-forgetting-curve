@@ -75,7 +75,7 @@
 
 .editable-element,
 .editable-input.ant-input {
-  width: calc(100% - 232px);
+  width: calc(100% - 230px);
   height: 100%;
   padding: 8px 8px;
   border-radius: 8px;
@@ -158,11 +158,6 @@
   color: aliceblue !important;
 }
 
-.obsidian-link {
-  width: 50px;
-  margin: 0 5px 0 5px;
-}
-
 .ant-picker-header {
   display: flex;
   justify-content: space-around;
@@ -226,4 +221,33 @@ td:hover, .ant-picker-time-panel-cell-inner:hover {
 /* Изменение цвета placeholder при наведении на DatePicker */
 .ant-picker:hover input::placeholder {
   color: var(--interactive-accent-hover); /* Цвет placeholder при наведении */
+}
+
+.statusIcon {
+  width: 28px;
+  height: 24px;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0.8 !important;
+}
+
+.warningIcon {
+  color: #FFC107;
+  opacity: 0.8 !important;
+}
+
+.allRightIcon {
+  color: #099735;
+  opacity: 0.8 !important;
+}
+
+.warningSevereIcon {
+  color: #a90220;
+  opacity: 0.8 !important;
+}
+
+.statusIcon:hover, .allRightIcon:hover, .warningSevereIcon:hover {
+  opacity: 1 !important;
 }

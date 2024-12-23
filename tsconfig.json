@@ -4,7 +4,7 @@
     "module": "ESNext",
     "moduleResolution": "node",
     "lib": ["DOM", "ES2020"],
-    "jsx": "react-jsx", // Новый JSX Runtime для React 18+
+    "jsx": "react-jsx",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true

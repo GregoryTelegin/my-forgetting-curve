@@ -1,15 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import TreeManager from './TreeManager';
-import AddNoteComponent from './addNotes'
+import React, { useState } from 'react';
+import TreeManager from './TreeNotes/TreeManager';
+import AddNoteComponent from './Forms/addNotes'
+import {Note} from './types/note'
 
-interface Note {
-  id: number;
-  name: string;
-  type: 'folder' | 'file';
-  children?: Note[];
-}
-
-const ParentComponent: React.FC<{ initialNotes: Note[]; onSave: (notes: Note[]) => void }> = ({
+const SettingsApp: React.FC<{ initialNotes: Note[]; onSave: (notes: Note[]) => void }> = ({
   initialNotes,
   onSave,
 }) => {
@@ -24,7 +18,7 @@ const ParentComponent: React.FC<{ initialNotes: Note[]; onSave: (notes: Note[]) 
   return (
     <div>
       <AddNoteComponent
-        initialNotes={notes}
+        _initialNotes={notes}
         onSaveNotes={handleAddNote}
       />
       <TreeManager
@@ -38,4 +32,4 @@ const ParentComponent: React.FC<{ initialNotes: Note[]; onSave: (notes: Note[]) 
   );
 };
 
-export default ParentComponent;
+export default SettingsApp;
