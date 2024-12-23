@@ -2,6 +2,7 @@ import React, {useState} from 'react'
 import '../../../styles.css'
 import dayjs from 'dayjs'
 import {Note} from '../types/note'
+import '../../styles.css'
 
 const AddNoteComponent: React.FC<{
   _initialNotes: Note[];
