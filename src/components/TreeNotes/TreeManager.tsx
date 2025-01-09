@@ -1,26 +1,46 @@
 import React, {useEffect, useRef, useState, useCallback} from 'react'
-import {Tree, ConfigProvider} from 'antd'
+import {Tree, notification} from 'antd'
 import type {TreeProps} from 'antd'
 
 import {RenderTreeNode} from './RenderTreeNode'
 import {setupGlobalStatusUpdate} from '../SetupGlobalStatusUpdate'
-import {getCSSVariable} from '../../utils/themeUtils'
-import type {Note} from '../types/note'
-import '../../../styles.css'
+import type {NextReviewDate, Note, Status} from '../types/Note'
+import {CurveForgetting} from '~/components/types/CurveForgetting'
+import {getCSSVariable} from '~/utils/themeUtils'
 
 const TreeManager: React.FC<{
+  app: any;
   data: Note[];
   onDataUpdate: (updatedData: Note[]) => void;
-}> = ({data, onDataUpdate}) => {
+  forgettingCurves: CurveForgetting[];
+}> = ({app, data, onDataUpdate, forgettingCurves}) => {
   const [treeData, setTreeData] = useState<Note[]>(data)
   const statusTimers = useRef<{ globalTimer?: NodeJS.Timeout }>({})
 
   useEffect(() => {
-    setTreeData(data);
-  }, [data]);
+    setTreeData(data)
+  }, [data])
 
   useEffect(() => {
-    setupGlobalStatusUpdate(statusTimers, setTreeData)
+    const showNotification = (status: Status, title: string) => {
+      if (status === 'warning') {
+        notification.warning({
+          message: 'Напоминание',
+          description: `Пришло время повторения "${title}".`,
+          placement: 'bottomRight',
+          className: "notificationWarning",
+        })
+      } else if (status === 'warningSevere') {
+        notification.error({
+          message: 'Важное напоминание',
+          description: `Срочное повторение для "${title}"!`,
+          placement: 'bottomRight',
+          className: "notificationSevere",
+        })
+      }
+    }
+
+    setupGlobalStatusUpdate(statusTimers, setTreeData, showNotification)
     return () => {
       if (statusTimers.current.globalTimer) {
         clearInterval(statusTimers.current.globalTimer)
@@ -81,67 +101,120 @@ const TreeManager: React.FC<{
     onDataUpdate(data as Note[])
   }
 
-  const updateNode = useCallback(
-    (key: string, updates: Partial<Note>) => {
-      setTreeData((prev: Note[]) => {
-        const updatedTreeData = prev.map((node: Note) =>
-          node.key === key
-            ? { ...node, ...updates }
-            : { ...node, children: updateNodeChildren(node.children, key, updates) },
-        );
-
-        onDataUpdate(updatedTreeData);
-        return updatedTreeData;
-      });
-    },
-    [onDataUpdate],
-  );
-
-  const themeTree = {
-    colorPrimary: getCSSVariable('--interactive-accent'),
-    colorText: getCSSVariable('--text-normal'),
-    colorBgContainer: getCSSVariable('--interactive-accent'),
-    borderRadius: 8,
-  }
+  const updateNode = useCallback((key: string, updates: Partial<Note>) => {
+    setTreeData((prev: Note[]) => {
+      const updatedTreeData: Note[] = updateNodeChildren(prev, key, updates)
+      if (updatedTreeData !== prev) {
+        onDataUpdate(updatedTreeData)
+      }
+      return updatedTreeData
+    })
+  }, [onDataUpdate])
 
   const handleDateChange = useCallback(
     (key: string, newDate: string) => {
-      updateNode(key, { nextReviewDate: newDate });
+      updateNode(key, {nextReviewDate: newDate})
     },
     [updateNode],
-  );
+  )
 
   const handleTitleChange = useCallback(
     (key: string, newTitle: string) => {
-      updateNode(key, { title: newTitle });
+      updateNode(key, {title: newTitle})
     },
     [updateNode],
-  );
+  )
+
+  const handleLinkNote = useCallback(
+    (key: string, newLinkNote: string) => {
+      updateNode(key, {linkNote: newLinkNote})
+    },
+    [updateNode],
+  )
+
+  const handleCurveForgetting = useCallback(
+    (key: string, curveForgetting: string) => {
+      updateNode(key, {forgettingCurveId: curveForgetting})
+    },
+    [updateNode],
+  )
+
+  const handleCurveForgettingLastActiveInterval = useCallback(
+    (key: string, newLastActiveInterval: number) => {
+      updateNode(key, {lastActiveInterval: newLastActiveInterval})
+    },
+    [updateNode],
+  )
+
+  const handleReviewDates = useCallback(
+    (key: string, newNextReviewDate: NextReviewDate, newReviewDates: NextReviewDate[], newLastActiveInterval: number) => {
+      updateNode(key, {
+        nextReviewDate: newNextReviewDate,
+        reviewDates: newReviewDates,
+        lastActiveInterval: newLastActiveInterval,
+      })
+    },
+    [updateNode],
+  )
+
+  const handleSkippedReviewDates = useCallback(
+    (key: string, newSkippedReviewDates: NextReviewDate[]) => {
+      updateNode(key, {skippedReviewDates: newSkippedReviewDates})
+    },
+    [updateNode],
+  )
+
+  const handleDeleteNote = useCallback(
+    (key: string) => {
+      setTreeData((prevTreeData) => {
+        const deleteNode = (nodes: Note[]): Note[] =>
+          nodes.filter((node) => {
+            if (node.key === key) return false
+            if (node.children) {
+              node.children = deleteNode(node.children)
+            }
+            return true
+          })
+
+        const updatedTreeData = deleteNode(prevTreeData)
+        onDataUpdate(updatedTreeData)
+        return updatedTreeData
+      })
+    },
+    [onDataUpdate],
+  )
 
   const processTreeNodes = (nodes: Note[]): Note[] =>
     nodes.map((node) => ({
       ...node,
       title: (
         <RenderTreeNode
+          app={app}
           key={node.key}
           node={node}
           onDateChange={handleDateChange}
           onTitleChange={handleTitleChange}
+          onLinkNoteChange={handleLinkNote}
+          forgettingCurves={forgettingCurves}
+          onCurveForgettingChange={handleCurveForgetting}
+          onCurveForgettingLastActiveIntervalChange={handleCurveForgettingLastActiveInterval}
+          onReviewDatesChange={handleReviewDates}
+          onSkippedReviewDatesChange={handleSkippedReviewDates}
+          onDeleteNote={handleDeleteNote}
         />
       ),
       children: node.children ? processTreeNodes(node.children) : [],
     }))
 
   return (
-    <ConfigProvider theme={{token: themeTree}}>
-      <Tree
-        onDrop={handleNodeDrop}
-        defaultExpandAll
-        draggable
-        blockNode
-        treeData={processTreeNodes(treeData)}
-      />
-    </ConfigProvider>
+    <Tree
+      onDrop={handleNodeDrop}
+      defaultExpandAll
+      draggable
+      blockNode
+      treeData={processTreeNodes(treeData)}
+      className="treeComp"
+    />
   )
 }
 
@@ -150,25 +223,26 @@ const updateNodeChildren = (
   key: string,
   updates: Partial<Note>,
 ): Note[] | undefined => {
-  if (!children) return children;
+  if (!children) return children
 
-  let hasChanged = false;
+  let hasChanged = false
 
   const updatedChildren = children.map((child) => {
-    const isTargetNode = child.key === key;
-    const updatedChildChildren = updateNodeChildren(child.children, key, updates);
+    const isTargetNode = child.key === key
+    const updatedChildChildren = updateNodeChildren(child.children, key, updates)
 
     if (isTargetNode || updatedChildChildren !== child.children) {
-      hasChanged = true;
+      hasChanged = true
     }
 
     return {
       ...child,
       ...(isTargetNode ? updates : {}),
       children: updatedChildChildren,
-    };
-  });
+    }
+  })
 
-  return hasChanged ? updatedChildren : children;
-};
+
+  return hasChanged ? updatedChildren : children
+}
 export default TreeManager

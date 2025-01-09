@@ -5,6 +5,14 @@
 }
 
 .addNote {
+  margin: 10px 0;
+  width: 100%;
+  height: 35px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.addCurveForgetting {
   margin-bottom: 10px;
   width: 100%;
   height: 35px;
@@ -13,10 +21,22 @@
 }
 
 .addNoteInput {
-  width: 82%;
+  width: 50%;
+}
+
+.addCurveForgettingInput {
+  width: 72%;
 }
 
 .addNoteInput:focus {
+  background-color: var(--background-modifier-hover) !important;
+  color: var(--text-on-accent);
+  border-radius: 8px;
+  box-shadow: 0 0 5px var(--interactive-accent), inset 0 0 0 2px var(--interactive-accent-hover) !important;
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.addCurveForgettingInput:focus {
   background-color: var(--background-modifier-hover) !important;
   color: var(--text-on-accent);
   border-radius: 8px;
@@ -29,6 +49,11 @@
   border-radius: 8px;
 }
 
+.addCurveForgettingButton {
+  width: 25%;
+  border-radius: 8px;
+}
+
 .ant-tree {
   padding: 4px 8px;
   border: 1px solid var(--background-modifier-border);
@@ -36,7 +61,6 @@
   background-color: var(--background-primary);
   color: var(--text-normal);
 }
-
 
 .ant-tree .ant-tree-treenode {
   background-color: var(--background-primary);
@@ -63,20 +87,11 @@
 
 .ant-tree-node-content-wrapper:hover {
   color: var(--interactive-accent);
-  box-shadow: 0 0 5px var(--interactive-accent-hover);
-  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
-}
-
-.content-editable {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .editable-element,
 .editable-input.ant-input {
-  width: calc(100% - 230px);
-  height: 100%;
+  width: 80%;
   padding: 8px 8px;
   border-radius: 8px;
   display: flex;
@@ -84,7 +99,7 @@
   justify-content: flex-start;
   font-size: 14px;
   line-height: normal;
-  background-color: var(--background-primary);
+  background-color: var(--interactive-accent);
   color: var(--text-normal);
   border: none;
   outline: none;
@@ -128,6 +143,20 @@
   background-color: transparent !important;
 }
 
+.anticon-caret-down, .anticon-caret-right {
+  font-size: 14px !important;
+}
+
+.anticon-holder {
+  font-size: 14px !important;
+}
+
+.ant-tree-draggable-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .ant-tree-switcher::before,
 .ant-tree-switcher::after {
   content: none !important;
@@ -135,7 +164,7 @@
   border: none !important;
 }
 
-.time-link-group {
+.repeatTimeGroup {
   width: 230px !important;
   margin-left: 2px;
   display: flex;
@@ -144,49 +173,8 @@
   background-color: transparent !important;
 }
 
-.date-picker {
-  width: 170px !important;
-  padding: 4px 0;
-  background-color: transparent !important;
-}
-
-.date-picker::placeholder {
-  color: aliceblue !important;
-}
-
-.ant-picker-input::placeholder {
-  color: aliceblue !important;
-}
-
-.ant-picker-header {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-.ant-picker-header-super-prev-btn, .ant-picker-header-prev-btn, .ant-picker-month-btn, .ant-picker-year-btn, .ant-picker-header-next-btn, .ant-picker-header-super-next-btn, .ant-picker-decade-btn {
-  background-color: transparent !important;
-  color: #1e1e1e !important;
-  border: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-.ant-picker-header-super-prev-btn:hover, .ant-picker-header-prev-btn:hover, .ant-picker-month-btn:hover, .ant-picker-year-btn:hover, .ant-picker-header-next-btn:hover, .ant-picker-header-super-next-btn:hover {
-  background-color: var(--background-modifier-hover);
-  opacity: 1 !important;
-  color: var(--color-base-00) !important;
-}
-
-th, td, .ant-picker-header-view, .ant-picker-time-panel-cell-inner {
-  color: var(--color-base-00) !important;
-}
-
-
-
-td:hover, .ant-picker-time-panel-cell-inner:hover {
-  color: var(--color-accent) !important;
-  opacity: 1 !important;
+.nextReviewDateSpan {
+  width: 170px;
 }
 
 .ant-picker-now-btn {
@@ -224,13 +212,14 @@ td:hover, .ant-picker-time-panel-cell-inner:hover {
 }
 
 .statusIcon {
-  width: 28px;
-  height: 24px;
-  font-size: 16px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  /*width: 28px;*/
+  /*height: 24px;*/
+  /*font-size: 16px;*/
+  /*display: flex;*/
+  /*justify-content: center;*/
+  /*align-items: center;*/
   opacity: 0.8 !important;
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
 }
 
 .warningIcon {
@@ -249,5 +238,345 @@ td:hover, .ant-picker-time-panel-cell-inner:hover {
 }
 
 .statusIcon:hover, .allRightIcon:hover, .warningSevereIcon:hover {
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.createCurveForgetting {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+}
+
+.collapseItem {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.ant-collapse-expand-icon, .ant-collapse-header-text {
+  color: var(--text-on-accent) !important;
+}
+
+.ant-collapse-item {
+  width: 100%;
+  border: none !important;
+}
+
+.ant-collapse-content-box {
+  background-color: var(--background-primary) !important;
+  color: var(--text-on-accent) !important;
+}
+
+.ant-input-outlined {
+  background-color: var(--interactive-accent) !important;
+}
+
+.ant-input-outlined:hover, .ant-input-outlined:focus {
+  box-shadow: 0 0 5px var(--interactive-accent), inset 0 0 0 2px var(--interactive-accent-hover) !important;
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.ant-collapse-content {
+  border: #a90220 !important;
+}
+
+.ant-list-item {
+  background-color: var(--background-primary) !important;
+}
+
+.anticon-holder {
+  color: var(--interactive-accent);
+  opacity: 0.8;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.anticon-holder:hover {
+  opacity: 1;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.dragAndDropBorder {
+  margin: 0 2px;
+  height: 2px;
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  background-color: var(--interactive-accent);
+}
+
+.listItem {
+  display: flex;
+  align-items: center;
+  cursor: move;
+  background-color: #fff;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  position: relative;
+}
+
+/*
+Общие стиль для DatePicker
+*/
+
+.datePicker {
+  color: aliceblue !important;
+  background-color: var(--interactive-accent);
+}
+
+.datePicker::placeholder {
+  color: aliceblue !important;
+}
+
+.ant-picker-input::placeholder {
+  color: aliceblue !important;
+}
+
+.ant-picker-header {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.ant-picker-header-super-prev-btn, .ant-picker-header-prev-btn, .ant-picker-month-btn, .ant-picker-year-btn, .ant-picker-header-next-btn, .ant-picker-header-super-next-btn, .ant-picker-decade-btn {
+  background-color: transparent !important;
+  color: #1e1e1e !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.ant-picker-header-super-prev-btn:hover, .ant-picker-header-prev-btn:hover, .ant-picker-month-btn:hover, .ant-picker-year-btn:hover, .ant-picker-header-next-btn:hover, .ant-picker-header-super-next-btn:hover {
+  background-color: var(--background-modifier-hover);
   opacity: 1 !important;
+  color: var(--color-base-00) !important;
+}
+
+th, td, .ant-picker-header-view, .ant-picker-time-panel-cell-inner {
+  color: var(--color-base-00) !important;
+}
+
+td:hover, .ant-picker-time-panel-cell-inner:hover {
+  color: var(--color-accent) !important;
+  opacity: 1 !important;
+}
+
+.content-editable {
+  display: flex;
+  flex-direction: column;
+
+}
+
+.firstPart {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.secondPart {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkOutlinedSpan, .doubleRightOutlinedSpan, .globalOutlinedButton, .closeOutlinedButton, .deleteButtonSpan, .statusSpan {
+  border-radius: 8px;
+  padding: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.linkOutlinedIcon {
+  padding: 8px !important;
+  border-radius: 8px !important;
+}
+
+.globalOutlinedButton {
+  color: darkblue !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+.checkOutlinedSpan:hover, .globalOutlinedButton:hover, .closeOutlinedButton:hover, .linkOutlinedIcon:hover, .doubleRightOutlinedSpan:hover, .deleteButtonSpan:hover, .statusSpan:hover {
+  box-shadow: 0 0 5px var(--interactive-accent), inset 0 0 0 2px var(--interactive-accent-hover) !important;
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.checkOutlinedIcon {
+  color: limegreen;
+  opacity: 0.8;
+}
+
+.checkOutlinedIcon:hover, .deleteButtonIcon:hover {
+  opacity: 1;
+}
+
+.deleteButtonIcon {
+  color: darkred;
+  opacity: 0.8;
+}
+
+.ant-modal-content {
+  width: 60vw;
+  height: 60vh;
+  left: -16vw;
+  background-color: var(--background-primary) !important;
+  overflow: hidden;
+}
+
+.ant-modal-title {
+  color: var(--text-on-accent) !important;
+  background-color: var(--background-primary) !important;
+  border-radius: 0;
+}
+
+.modalSelectDoc {
+  border: none;
+  outline: none;
+}
+
+.listFilePath {
+  cursor: pointer;
+}
+
+.listFilePath:hover {
+  background-color: var(--background-modifier-border) !important;
+  cursor: pointer;
+}
+
+.filePathSearch {
+  margin-bottom: 16px;
+  background-color: var(--background-modifier-hover) !important;
+  color: var(--text-on-accent);
+  border-radius: 8px;
+  /*box-shadow: 0 0 5px var(--interactive-accent), inset 0 0 0 2px var(--interactive-accent-hover) !important;*/
+  /*transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;*/
+}
+
+.filePathSearch:focus {
+  background-color: var(--background-modifier-hover) !important;
+  color: var(--text-on-accent);
+  box-shadow: 0 0 5px var(--interactive-accent), inset 0 0 0 2px var(--interactive-accent-hover) !important;
+  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.ant-select-item, .ant-select-item-option {
+  color: var(--text-on-accent);
+  background-color: transparent !important;
+}
+
+.ant-select-item-option-active {
+  background-color: var(--background-modifier-hover) !important;
+}
+
+.ant-select-dropdown {
+  color: var(--text-on-accent);
+  background-color: var(--background-modifier-form-field) !important;
+}
+
+.ant-select-selector {
+  border: none !important;
+  background-color: var(--interactive-accent) !important;
+  color: var(--text-on-accent) !important;
+}
+
+.ant-select-selector {
+  border: none !important;
+  color: var(--text-on-accent) !important;
+}
+
+.ant-select-selection-item {
+  color: var(--text-on-accent) !important;
+}
+
+.ant-select-selection-placeholder {
+  color: var(--text-on-accent) !important;
+}
+
+.curveItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ant-collapse-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.ant-list-item {
+  padding: 4px 0 !important;
+}
+
+.draggableItem {
+  cursor: grab;
+}
+
+.ant-tree-switcher {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+.ant-select-selector {
+  height: 25px;
+}
+
+.statusSkipSpan {
+  width: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.linkNoteComponent {
+  width: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.closeOutlinedButton {
+  background-color: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.datePickerSelectGroup {
+  margin: 4px 0 0 0;
+  width: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.doubleRightOutlinedIcon {
+  color: cornflowerblue !important;
+}
+
+.notificationWarning {
+  background-color: var(--interactive-accent) !important;
+  color: var(--text-on-accent) !important;
+  border-radius: 4px;
+}
+
+.notificationSevere {
+  background-color: var(--interactive-accent) !important;
+  color: var(--text-on-accent) !important;
+}
+
+.ant-notification-notice-description, .ant-notification-notice-message, .ant-notification-notice-close {
+  color: var(--text-on-accent) !important;
 }
