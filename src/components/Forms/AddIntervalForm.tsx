@@ -1,10 +1,8 @@
 import React, {useState} from 'react'
-import '../../../styles.css'
 import dayjs from 'dayjs'
-import {Note} from '../types/note'
-import '../../styles.css'
+import {Note} from '../types/Note'
 
-const AddNoteComponent: React.FC<{
+const CreateCurveForgettingForm: React.FC<{
   _initialNotes: Note[];
   onSaveNotes: (newNote: Note) => void;
 }> = ({_initialNotes, onSaveNotes}) => {
@@ -43,4 +41,4 @@ const AddNoteComponent: React.FC<{
   )
 }
 
-export default AddNoteComponent
+export default CreateCurveForgettingForm

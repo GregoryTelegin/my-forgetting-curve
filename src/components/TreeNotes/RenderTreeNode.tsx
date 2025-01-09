@@ -1,10 +1,14 @@
-import React, {memo, useRef, useState} from 'react'
-import {CheckCircleOutlined, WarningOutlined} from '@ant-design/icons'
+import React, {memo, useState, useEffect} from 'react'
 import en from 'antd/es/date-picker/locale/en_US'
-import {DatePicker, Input} from 'antd'
+import {DatePicker, Select} from 'antd'
 import dayjs from 'dayjs'
-
-import {Note, Status} from '../types/note'
+import StatusIcon from '~/components/StatusIcon'
+import {Note} from '../types/Note'
+import EditableInput from '~/components/EditableInput'
+import {LinkOutlined, CheckOutlined, DoubleRightOutlined, DeleteOutlined} from '@ant-design/icons'
+import LinkNote from '~/components/LinkNote'
+import forgettingCurves from '~/components/ForgettingCurves'
+import {CurveForgetting} from '~/components/types/CurveForgetting'
 
 const buddhistLocale: typeof en = {
   ...en,
@@ -18,14 +22,60 @@ const buddhistLocale: typeof en = {
 }
 
 export const RenderTreeNode: React.FC<{
+  app: any;
   node: Note;
   onDateChange: (key: string, newDate: string) => void;
   onTitleChange: (key: string, newTitle: string) => void;
-}> = memo(({node, onDateChange, onTitleChange}) => {
+  onLinkNoteChange: (key: string, newLinkNote: string) => void;
+  forgettingCurves: CurveForgetting[];
+  onCurveForgettingChange: (key: string, curveForgetting: string) => void;
+  onCurveForgettingLastActiveIntervalChange: (key: string, lastActiveInterval: string) => void;
+  onReviewDatesChange: (
+    key: string,
+    nextReviewDate: dayjs.Dayjs,
+    newReviewDates: dayjs.Dayjs[],
+    newLastActiveInterval: number,
+  ) => void;
+  onSkippedReviewDatesChange: (
+    key: string,
+    newSkippedReviewDates: dayjs.Dayjs[],
+  ) => void;
+  onDeleteNote: (key: string) => void;
+}> = memo(({
+  app,
+  node,
+  onDateChange,
+  onTitleChange,
+  onLinkNoteChange,
+  forgettingCurves,
+  onCurveForgettingChange,
+  onCurveForgettingLastActiveIntervalChange,
+  onReviewDatesChange,
+  onSkippedReviewDatesChange,
+  onDeleteNote
+}) => {
   const [title, setTitle] = useState(node.title)
-  const handleSave = (node: Note, title: string) => {
+  const [linkNote, setLinkNote] = useState(node.linkNote)
+  const [currentCurveId, setCurrentCurveId] = useState(node.forgettingCurveId)
+  const [lastActiveIntervalState, setLastActiveIntervalState] = useState(
+    node.lastActiveInterval || 1,
+  )
+
+  useEffect(() => {
+    const activeCurve = forgettingCurves.find((curve) => curve.id === currentCurveId)
+    if (activeCurve) {
+      setLastActiveIntervalState(1)
+    }
+  }, [currentCurveId, forgettingCurves])
+
+  const handleSaveTitle = (node: Note, title: string) => {
     setTitle(title)
     onTitleChange(node.key, title)
+  }
+
+  const handleSaveLinkNote = (node: Note, link: string) => {
+    setLinkNote(link)
+    onLinkNoteChange(node.key, link)
   }
 
   const handleDatePickerChange = (date: dayjs.Dayjs | null) => {
@@ -33,70 +83,159 @@ export const RenderTreeNode: React.FC<{
     onDateChange(node.key, newDate)
   }
 
+  const handleCurveForgettingChange = (curveForgettingId: string) => {
+    if (curveForgettingId === currentCurveId) return
+
+    const newCurve = forgettingCurves.find((curve) => curve.id === curveForgettingId)
+    if (!newCurve) {
+      console.error('Selected forgetting curve not found!')
+      return
+    }
+
+    setCurrentCurveId(curveForgettingId)
+    setLastActiveIntervalState(1)
+    onCurveForgettingChange(node.key, curveForgettingId)
+    onCurveForgettingLastActiveIntervalChange(node.key, 1)
+  }
+
+  const handleCurveForgettingLastActiveIntervalChange = (interval: number) => {
+    setLastActiveIntervalState(interval)
+    onCurveForgettingLastActiveIntervalChange(node.key, interval)
+  }
+
+  const handleDone = () => {
+    const currentDate = dayjs()
+
+    const newReviewDates = node.reviewDates && Array.isArray(node.reviewDates)
+      ? [...node.reviewDates]
+      : []
+
+    if (!node.nextReviewDate) {
+      node.nextReviewDate = currentDate
+    }
+    newReviewDates.push(node.nextReviewDate)
+
+    const activeForgettingCurve = forgettingCurves.find(
+      (curve) => curve.id === currentCurveId,
+    )
+
+    if (!activeForgettingCurve) {
+      console.error('Active forgetting curve not found!')
+      return
+    }
+
+    const activeInterval =
+      activeForgettingCurve.intervals[lastActiveIntervalState - 1]
+    if (!activeInterval) {
+      console.error('Active interval not found in the forgetting curve!')
+      return
+    }
+
+    const durationInSeconds = activeInterval.value
+    const nextReviewDate = currentDate.add(durationInSeconds, 'second')
+
+    let newLastActiveInterval = lastActiveIntervalState || 0
+    if (
+      lastActiveIntervalState &&
+      lastActiveIntervalState < activeForgettingCurve.intervals.length
+    ) {
+      newLastActiveInterval++
+    }
+
+    setLastActiveIntervalState(newLastActiveInterval)
+
+    onReviewDatesChange(
+      node.key,
+      nextReviewDate,
+      newReviewDates,
+      newLastActiveInterval,
+    )
+  }
+
+  const handleSkip = () => {
+    const currentDate = dayjs()
+
+    const newSkippedReviewDates = node.skippedReviewDates && Array.isArray(node.skippedReviewDates)
+      ? [...node.skippedReviewDates]
+      : []
+
+    newSkippedReviewDates.push(currentDate)
+    onSkippedReviewDatesChange(node.key, newSkippedReviewDates)
+  }
+
+  const handleDelete = () => {
+    onDeleteNote(node.key);
+  };
+
   return (
     <span className="content-editable">
-      <EditableInput
-        value={title}
-        node={node}
-        onSave={handleSave}
-        className="editable-input"
-      />
-      <span className="time-link-group">
-        <DatePicker
-          defaultValue={dayjs(node.nextReviewDate)}
-          showTime
-          locale={buddhistLocale}
-          onChange={handleDatePickerChange}
+      <span className="firstPart">
+        <EditableInput
+          value={title}
+          node={node}
+          onSave={handleSaveTitle}
+          className="editable-input"
         />
-        <StatusIcon status={node.status}/>
+        <LinkNote
+          app={app}
+          linkNote={linkNote}
+          onSave={handleSaveLinkNote}
+          node={node}
+          className="linkNoteComponent"
+        />
+        <span className="checkOutlinedSpan" onClick={handleDone}>
+          <CheckOutlined className="checkOutlinedIcon"/>
+        </span>
+      </span>
+      <span className="secondPart">
+        <span className="datePickerSelectGroup">
+          <span className="nextReviewDateSpan">
+            <DatePicker
+              defaultValue={dayjs(node.nextReviewDate)}
+              showTime
+              locale={buddhistLocale}
+              onChange={handleDatePickerChange}
+              className="datePicker"
+            />
+          </span>
+          <Select
+            value={lastActiveIntervalState}
+            onChange={handleCurveForgettingLastActiveIntervalChange}
+            style={{width: '20%'}}
+            options={[
+              ...forgettingCurves
+                .find((curve) => curve.id === currentCurveId)
+                ?.intervals.map((_, index) => ({
+                  value: index + 1,
+                  label: index + 1,
+                })) || [],
+            ]}
+          />
+          <Select
+            value={currentCurveId}
+            onChange={handleCurveForgettingChange}
+            style={{width: '40%'}}
+            options={forgettingCurves.map((curve) => ({
+              value: curve.id,
+              label: curve.title,
+            }))}
+          />
+        </span>
+        <span className="statusSkipSpan">
+          <span className="statusSpan">
+            <StatusIcon status={node.status}/>
+          </span>
+          <span className="doubleRightOutlinedSpan" onClick={handleSkip}>
+            <DoubleRightOutlined className="doubleRightOutlinedIcon"/>
+          </span>
+        </span>
+        <span className="deleteButtonSpan" onClick={handleDelete}>
+          <DeleteOutlined className="deleteButtonIcon" />
+        </span>
       </span>
     </span>
   )
 })
 
-const EditableInput: React.FC<{
-  value: string;
-  node: Note;
-  onSave: (node: Note, newValue: string) => void;
-}> = ({value, node, onSave}) => {
-  const inputRef = useRef<Input>(null)
-  const hasSaved = useRef(false)
 
-  const finishEditing = (newValue: string) => {
-    if (hasSaved.current) return
-    hasSaved.current = true
 
-    onSave(node, newValue)
-    inputRef.current?.blur()
-
-    setTimeout(() => {
-      hasSaved.current = false
-    }, 0)
-  }
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      finishEditing((e.target as HTMLInputElement).value)
-    }
-  }
-
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    finishEditing(e.target.value)
-  }
-
-  return (
-    <Input
-      ref={inputRef}
-      defaultValue={value}
-      onBlur={handleBlur}
-      onKeyDown={handleKeyDown}
-      className="editable-input"
-    />
-  )
-}
-
-const StatusIcon: React.FC<{ status: Status }> = memo(({status}) => {
-  if (status === 'ok') return <CheckCircleOutlined className="allRightIcon"/>
-  if (status === 'warning') return <WarningOutlined className="warningIcon"/>
-  if (status === 'warningSevere') return <WarningOutlined className="warningSevereIcon"/>
-  return null
-})
